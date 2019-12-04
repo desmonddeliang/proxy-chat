@@ -9,7 +9,7 @@ import time
 from time import sleep
 
 master_host = "35.245.101.65"
-master_port = 2004
+master_port = 443
 BUFFER_SIZE = 2048
 
 # Multithreaded Python server
