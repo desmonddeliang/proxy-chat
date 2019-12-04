@@ -8,9 +8,17 @@ from Crypto.Cipher import PKCS1_OAEP
 import ast
 from os import path
 
-default_relay = socket.gethostname()
+default_relay = '35.189.127.126'
 port = 443
-BUFFER_SIZE = 2048
+BUFFER_SIZE = 8192
+
+class Session:
+    username = ""
+    password = b""
+    keypair = b""
+    conn = ""
+    relays = ['35.189.127.126',
+             '35.243.212.159']
 
 def log(msg):
     print(bcolors.OKBLUE + " - " +  msg + bcolors.ENDC)
@@ -55,12 +63,7 @@ class Mail:
     payload = ""
 
 
-class Session:
-    username = ""
-    password = b""
-    keypair = b""
-    conn = ""
-    relays = []
+
 
 
 
@@ -86,15 +89,17 @@ def conn_init(session):
 
     except:
         # Our first relay server is down, go down the relay server list
-        err("Relay server down!")
+        err("Default relay server is down!")
         for i in range(len(session.relays)):
             try:
-                log("Trying relay server " + str(i) + "...")
+                log("Trying relay server at " + session.relays[i] + "...")
+                session.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                session.conn.settimeout(5.0)
                 session.conn.connect((session.relays[i], port))
                 return session.relays[i]
                 break
             except:
-                err("The " + str(i) + " relay server is down. Trying a new one...")
+                err("Relay server at " + session.relays[i] + " is down. Trying a new one...")
 
 
 def conn_close(session):
