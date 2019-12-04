@@ -8,9 +8,18 @@ import ast
 import time
 from time import sleep
 
+
+# MASTER SERVER SETTINGS
 master_host = "35.245.101.65"
+#master_host = "127.0.0.1"
 master_port = 443
 BUFFER_SIZE = 2048
+
+# RELAY SERVER SETTINGS
+TCP_IP = socket.gethostname()
+TCP_PORT = 443
+BUFFER_SIZE = 2000
+
 
 # Multithreaded Python server
 class ClientThread(Thread):
@@ -43,10 +52,7 @@ class ClientThread(Thread):
                 print("One message exchanged.")
 
 
-# Multithreaded Python server
-TCP_IP = '0.0.0.0'
-TCP_PORT = 2019
-BUFFER_SIZE = 2000
+
 
 tcpServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcpServer.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

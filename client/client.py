@@ -4,8 +4,13 @@ import pickle
 import hashlib
 from Crypto.PublicKey import RSA
 from Crypto import Random
+from Crypto.Cipher import PKCS1_OAEP
 import ast
 from os import path
+
+default_relay = socket.gethostname()
+port = 443
+BUFFER_SIZE = 2048
 
 def log(msg):
     print(bcolors.OKBLUE + " - " +  msg + bcolors.ENDC)
@@ -57,9 +62,7 @@ class Session:
     conn = ""
     relays = []
 
-default_relay = socket.gethostname()
-port = 2019
-BUFFER_SIZE = 2048
+
 
 
 # function for debugging purpose
@@ -115,12 +118,15 @@ def send_mail(session):
         # Getting public key Unsuccessful
         err("Getting public key Unsuccessful!")
         return -1
-    target_publickey = recv_msg.publickey
+
+    target_publickey = RSA.importKey(recv_msg.publickey)
 
     # 2. Encrypt text message
     text = prompt("What do you want to say?").encode()
     log("Encrypting your message...")
-    encrypted = target_publickey.encrypt(text, 32)
+
+    encryptor = PKCS1_OAEP.new(target_publickey)
+    encrypted = encryptor.encrypt(text)
 
     # 3. Send message to server along with credentials
     new_msg = Msg()
@@ -173,7 +179,8 @@ def retrieve_mail(session):
             print("[Sender]    " + item.sender)
             print("[Timestamp] " + str(item.timestamp))
             print("[Message]   ")
-            decrypted_data = session.keypair.decrypt(item.payload)
+            decryptor = PKCS1_OAEP.new(session.keypair)
+            decrypted_data = decryptor.decrypt(ast.literal_eval(str(item.payload)))
             print(decrypted_data.decode())
             seg()
 
@@ -204,7 +211,7 @@ def new_user(session):
     new_msg.type = 1
     new_msg.username = username
     new_msg.password = password
-    new_msg.publickey = key.publickey()
+    new_msg.publickey = key.publickey().exportKey()
     MESSAGE = pickle.dumps(new_msg)
 
     log("Contacting server...")

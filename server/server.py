@@ -2,8 +2,6 @@ import socket
 import pickle
 from threading import Thread
 from socketserver import ThreadingMixIn
-from Crypto.PublicKey import RSA
-from Crypto import Random
 import ast
 import time
 from time import sleep
@@ -11,7 +9,7 @@ from time import sleep
 # Multithreaded Python server
 
 # MASTER SERVER SETTINGS
-TCP_IP = '35.245.101.65'
+TCP_IP = socket.gethostname()
 TCP_PORT = 443
 BUFFER_SIZE = 2048
 
