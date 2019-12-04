@@ -11,12 +11,13 @@ from time import sleep
 # Multithreaded Python server
 
 # MASTER SERVER SETTINGS
-TCP_IP = '0.0.0.0'
+TCP_IP = '35.245.101.65'
 TCP_PORT = 2004
-BUFFER_SIZE = 2000
+BUFFER_SIZE = 2048
 
 # RELAY PROXY SERVER ADDRESSES
-RELAY = ['172.0.0.1']
+RELAY = ['35.189.127.126',
+         '35.243.212.159']
 
 
 # Multithreaded Python server

@@ -70,14 +70,28 @@ def print_msg(msg):
 
 
 def conn_init(session):
-
     session.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    if len(session.relays) == 0:
+
+    # 3 seconds connection timeout
+    session.conn.settimeout(3.0)
+
+    try:
         # Default relay
+        log("Connecting to default relay server...")
         session.conn.connect((default_relay, port))
-    else:
-        # Use update relay addresses
-        session.conn.connect((session.relays[0], port))
+        return default_relay
+
+    except:
+        # Our first relay server is down, go down the relay server list
+        err("Relay server down!")
+        for i in range(len(session.relays)):
+            try:
+                log("Trying relay server " + str(i) + "...")
+                session.conn.connect((session.relays[i], port))
+                return session.relays[i]
+                break
+            except:
+                err("The " + str(i) + " relay server is down. Trying a new one...")
 
 
 def conn_close(session):
@@ -277,7 +291,7 @@ def main_menu(session):
 
 
 def ping_server(session):
-    conn_init(session)
+    relay_addr = conn_init(session)
     new_msg = Msg()
     new_msg.type = 0
     session.conn.send(pickle.dumps(new_msg))

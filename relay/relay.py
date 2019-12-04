@@ -8,7 +8,7 @@ import ast
 import time
 from time import sleep
 
-master_host = socket.gethostname()
+master_host = "35.245.101.65"
 master_port = 2004
 BUFFER_SIZE = 2048
 
